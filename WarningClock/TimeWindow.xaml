@@ -5,8 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WarningClock"
         mc:Ignorable="d"
-        Title="TimeWindow" Height="450" Width="800">
+        Title="整点报时服务" Height="450" Width="800" WindowStyle="None"  AllowsTransparency="True" 
+         WindowStartupLocation="CenterScreen"  BorderBrush="Black" ShowInTaskbar="False" Loaded="Window_Loaded">
+    <Window.Resources>
+        <Style x:Key="timeColor" TargetType="TextBlock">
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="{Binding Color}" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Window.Background>
+        <SolidColorBrush Opacity="0.1" Color="#667ade"></SolidColorBrush>
+    </Window.Background>
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Label Name="lblTime" Grid.Row="1" Grid.Column="1" FontFamily="微软雅黑" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" FontWeight="Bold" MouseDoubleClick="lblTime_MouseDoubleClick" >
+
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource timeColor}" Text="{Binding Path=Time, StringFormat='{}{0:HH:mm:ss}'}"  />
+        </Label>
     </Grid>
+
 </Window>

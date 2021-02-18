@@ -5,36 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WarningClock"
         mc:Ignorable="d"
-        Title="整点报时服务" Height="450" Width="800" WindowStyle="None"  AllowsTransparency="True" 
-         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" BorderBrush="Black" ShowInTaskbar="False">
-    <Window.Resources>
-        <Style x:Key="timeColor" TargetType="TextBlock">
-            <Setter Property="Foreground">
-                <Setter.Value>
-                    <SolidColorBrush Color="{Binding Color}" />
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
+        Title="整点报时服务" Height="20" Width="80" WindowStyle="None"  AllowsTransparency="True" 
+         Loaded="Window_Loaded" BorderBrush="Black" ShowInTaskbar="False" Topmost="True" ResizeMode="NoResize" >
     <Window.Background>
-        <SolidColorBrush Opacity="0.1" Color="#667ade"></SolidColorBrush>
+        <SolidColorBrush Opacity="1"></SolidColorBrush>
     </Window.Background>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
+
+    <Grid  Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-
-        <Label Name="lblTime" Grid.Row="1" Grid.Column="1" FontFamily="微软雅黑" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50" FontWeight="Bold" MouseDoubleClick="HideForm" >
-
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource timeColor}" Text="{Binding Path=Time, StringFormat='{}{0:HH:mm:ss}'}"  />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Border BorderThickness="1" CornerRadius="10,10,10,10"  Name="top">
+            <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="0.8">
+                    <GradientStop Color="#667ade" />
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+        <Label Name="lblTime" Grid.Row="1" Grid.Column="1" FontFamily="微软雅黑" HorizontalAlignment="Center" Foreground="#fff"  VerticalAlignment="Center" FontSize="12" FontWeight="Medium">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=Time, StringFormat='{}{0:HH:mm:ss}'}"  />
         </Label>
     </Grid>
-
 </Window>

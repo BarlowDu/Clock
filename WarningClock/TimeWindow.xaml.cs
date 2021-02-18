@@ -25,9 +25,19 @@ namespace WarningClock
         }
 
         protected TimeViewModel timeViewModel;
-        public TimeWindow(TimeViewModel vm) {
+        public TimeWindow(TimeViewModel vm):this() {
             this.timeViewModel = vm;
+            this.DataContext = vm;
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowUtil.HideAltTab(this);
+        }
+
+        private void lblTime_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -21,19 +22,37 @@ namespace WarningClock
     public partial class MainWindow : Window
     {
         System.Timers.Timer timerClock;
-        const int defaultWidth= 800;
-        const int defaultHeight = 450;
+        TimeWindow timeWindow;
+        TimeViewModel viewModel;
         public MainWindow()
         {
             InitializeComponent();
             InitNotify();
-
+            InitLocation();
+            this.MouseLeftButtonDown += MainWindow_MouseLeftButtonDown;
+            //this.Hide();
 
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            WindowUtil.HideAltTab(this);
             InitTimerClock();
+            //this.Hide();
+        }
+
+        private void MainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void InitLocation()
+        {
+            double screenHeight = SystemParameters.FullPrimaryScreenHeight;
+            double screenWidth = SystemParameters.FullPrimaryScreenWidth;
+
+            this.Left = screenWidth - this.Width;
+            this.Top = screenHeight - this.Height;
         }
 
         #region notify
@@ -57,7 +76,11 @@ namespace WarningClock
 
 
             System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("退出");
-            exit.Click += (sender, e) => { this.Close(); };
+            exit.Click += (sender, e) =>
+            {
+                timeWindow?.Close();
+                this.Close();
+            };
             //关联托盘控件
             System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { max, normal, exit };
             notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(childen);
@@ -70,22 +93,21 @@ namespace WarningClock
         #region TimerClock
         private void InitTimerClock()
         {
-
-
-            var vm = new TimeViewModel();
-            this.DataContext = vm;
-
+            viewModel = new TimeViewModel();
+            this.DataContext = viewModel;
             timerClock = new System.Timers.Timer();
             timerClock.Interval = 1000;
             timerClock.Elapsed += (_sender, _e) =>
             {
-                ShowTime(vm);
+                ShowTime();
 
             };
             timerClock.Start();
         }
 
-        private void ShowTime(TimeViewModel vm)
+
+
+        private void ShowTime()
         {
             var now = DateTime.Now;
 
@@ -94,15 +116,15 @@ namespace WarningClock
                 ShowNormal();
             }
 
-            if (now.Minute==0&&now.Second >= 0 && now.Second <= 10)
+            if (now.Minute == 0 && now.Second >= 0 && now.Second <= 10)
             {
-                vm.Color = Color.FromRgb(255, 0, 0);
+                viewModel.Color = Color.FromRgb(255, 0, 0);
             }
             else
             {
-                vm.Color = Color.FromRgb(0, 0, 0);
+                viewModel.Color = Color.FromRgb(0, 0, 0);
             }
-            vm.Time = DateTime.Now;
+            viewModel.Time = DateTime.Now;
 
         }
         #endregion
@@ -110,43 +132,65 @@ namespace WarningClock
 
 
 
-        private void HideForm(object sender, MouseButtonEventArgs e)
+
+
+        #region show timewindow
+        private void ShowNormal()
         {
-            this.Hide();
-            this.Topmost = false;
-            this.WindowState = WindowState.Normal;
-        }
 
-        private void ShowNormal() {
-            this.Dispatcher.Invoke(() => {
-                this.Hide();
-                this.WindowState = WindowState.Normal;
-                this.Width = defaultWidth;
-                this.Height = defaultHeight;
-                //MessageBox.Show(string.Format("{0}*{1}", bounds.Width, bounds.Height));
-                this.Close();
-                this.Show();
-                var bounds = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
-                //double screenHeight = SystemParameters.FullPrimaryScreenHeight;
-                //double screenWidth = SystemParameters.FullPrimaryScreenWidth;
-                this.Topmost = true;
-                this.Activate();
-                this.Topmost = false;
+            if (timeWindow == null)
+            {
+                ShowTimeWindow();
+                return;
+            }
+            if (timeWindow.WindowState == WindowState.Normal)
+            {
+                timeWindow.Activate();
+                return;
+            }
 
-            });
+            timeWindow.Close();
+
+            ShowTimeWindow();
 
         }
         private void ShowMax()
         {
-            this.Dispatcher.Invoke(() => {
-                this.Hide();
-                this.WindowState = WindowState.Maximized;
-                this.Show();
-                this.Topmost = true;
-                this.Activate();
-                this.Topmost = false;
-            });
+            if (timeWindow != null)
+            {
+                if (timeWindow.WindowState == WindowState.Maximized)
+                {
+                    timeWindow.Activate();
+                    return;
+                }
+                timeWindow.Close();
+            }
+            ShowTimeWindow(WindowState.Maximized);
+
         }
 
+        private void ShowTimeWindow(WindowState windowState = WindowState.Normal)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var result = new TimeWindow(viewModel)
+                {
+                    WindowState = windowState
+                };
+                result.Closed += (object sender, EventArgs e) =>
+                {
+                    if (sender == this.timeWindow)
+                    {
+                        this.timeWindow = null;
+                    }
+                };
+                this.timeWindow = result;
+                result.Topmost = true;
+                result.Show();
+                result.Activate();
+            });
+        }
+        #endregion
     }
+
 }
