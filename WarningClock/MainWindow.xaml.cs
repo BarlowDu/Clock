@@ -67,11 +67,18 @@ namespace WarningClock
             notifyIcon.Visible = true;
 
 
-            System.Windows.Forms.MenuItem max = new System.Windows.Forms.MenuItem("全屏");
-            max.Click += (sender, e) => { ShowMax(); };
+            System.Windows.Forms.MenuItem maxTimeWindows = new System.Windows.Forms.MenuItem("全屏");
+            maxTimeWindows.Click += (sender, e) => { ShowMax(); };
 
-            System.Windows.Forms.MenuItem normal = new System.Windows.Forms.MenuItem("正常");
-            normal.Click += (sender, e) => { ShowNormal(); };
+            System.Windows.Forms.MenuItem showTimeWindows = new System.Windows.Forms.MenuItem("显示");
+            showTimeWindows.Click += (sender, e) => { ShowNormal(); };
+
+
+            System.Windows.Forms.MenuItem showMainWindow = new System.Windows.Forms.MenuItem("显示浮窗");
+            showMainWindow.Click += (sender, e) => { Show(); };
+
+            System.Windows.Forms.MenuItem hideMainWindow = new System.Windows.Forms.MenuItem("隐藏浮窗");
+            hideMainWindow.Click += (sender, e) => { Hide(); };
 
 
 
@@ -82,7 +89,7 @@ namespace WarningClock
                 this.Close();
             };
             //关联托盘控件
-            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { max, normal, exit };
+            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { maxTimeWindows, showTimeWindows, showMainWindow, hideMainWindow, exit };
             notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(childen);
 
         }
